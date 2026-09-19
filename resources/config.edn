@@ -1,10 +1,9 @@
 {:service {:host "127.0.0.1"
            :port 8080
            :log-level :debug}
- :routing {:engine :reference
+ :routing {:engine :bend-cpu
            :scale 1000
            :worker-timeout-ms 30000
            :max-nodes 1000000
            :max-edges 8000000}
  :rerouting {:forecast-interval-hours 3}}
-

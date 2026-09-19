@@ -4,8 +4,10 @@
 
 Replace the Julia/C3/Vine/HVM4 stack with a maintainable hybrid Clojure + Bend 2
 application while preserving at least the existing user-visible and numerical
-capabilities. Migration is incremental: the old application remains the
-behavioral baseline until every parity gate passes.
+capabilities. Bend is the first and only home of physical models and routing
+algorithms; Clojure is the system shell. Migration is incremental: exported
+results from the old application remain the behavioral oracle until every
+parity gate passes.
 
 ## Baseline capability map
 
@@ -16,9 +18,9 @@ behavioral baseline until every parity gate passes.
 | H3 multi-resolution grid | Clojure | JVM H3 binding or data service; preserve IDs | Golden Aegean graph statistics |
 | GSHHG land classification | Clojure | JTS/GeoTools ingestion and prepared geometry | Coastline and island fixture suite |
 | Land-crossing edge filter | Clojure | Segment sampling initially; exact geometry later | Zero forbidden crossings in fixtures |
-| Kwon speed loss | Clojure + Bend | Reference in Clojure, batched kernel in Bend | Property and differential tests |
+| Kwon speed loss | Bend | Implement directly in Bend; compare with legacy fixtures | Property and golden tests |
 | Time/fuel/weighted/safety objectives | Shared contract | Scaled unsigned edge weights | Golden cost-mode routes |
-| C3 Fibonacci-heap Dijkstra | Clojure reference, Bend production | Correct reference first; optimize Bend later | Exact cost/path parity |
+| C3 Fibonacci-heap Dijkstra | Bend | Implement correctness-first Bend Dijkstra, then optimize | Exact cost/path parity |
 | Vine delta-stepping | Bend | Reimplement with balanced parallel work | Correctness plus benchmark gate |
 | Forecast-window rerouting | Clojure orchestration | Immutable snapshots and repeated kernel calls | Deterministic voyage simulation |
 | Waypoint metadata | Clojure | Enrich returned Bend node path | GeoJSON/ETA schema tests |
@@ -74,15 +76,16 @@ Implement four explicit interfaces:
 4. `RoutingEngine`: CSR + source/target to path and diagnostics.
 
 No HTTP handler may call Bend directly. It calls an application service that is
-parameterized by these interfaces. This permits fixture tests, fallback, shadow
-execution, and engine replacement.
+parameterized by these interfaces. `CostModel` and `RoutingEngine` are Bend
+worker operations, never Clojure implementations. This permits fixture tests,
+worker supervision, Bend-to-Bend shadow execution, and engine replacement.
 
 ### 4. Refinement — phased implementation
 
 #### Phase 0: foundation — included in this repository
 
-- Clojure project, domain records, Kwon reference model, reference Dijkstra
-- Bend 2 checked prototype for parallel candidate reduction
+- Clojure project and orchestration/process boundary only
+- Bend 2 checked Kwon physics and parallel routing prototypes
 - architecture and migration documents
 - unit tests and local commands
 
@@ -116,10 +119,10 @@ land route is accepted.
 
 #### Phase 4: weather and cost parity
 
-- Implement forecast adapters and interpolation.
-- Complete the Clojure Kwon model and objective policies.
-- Implement the same pure edge-cost kernel in Bend.
-- Differential-test randomized valid ship/weather/edge inputs.
+- Implement raw forecast adapters in Clojure.
+- Implement interpolation, Kwon physics, and every objective policy in Bend.
+- Test randomized valid ship/weather/edge inputs against exported legacy cases
+  and independently calculated specification examples.
 
 Gate: integer weights match exactly after agreed scaling and rounding.
 
@@ -139,8 +142,8 @@ edge existence and total cost rather than sequence identity.
 
 - Compile a native worker pinned by Bend version and source hash.
 - Add framed binary protocol, timeout, maximum graph size, crash supervision,
-  bounded concurrency, and reference fallback.
-- Run shadow mode in development and staging.
+  and bounded concurrency. Do not add a Clojure computational fallback.
+- Run stable-Bend versus candidate-Bend shadow mode in development and staging.
 
 Gate: malformed or failed worker requests cannot crash the Clojure service;
 shadow mismatch rate is zero for the golden suite.
@@ -171,7 +174,8 @@ required maritime safety review has occurred.
 - Every capability row has automated acceptance evidence.
 - Golden and randomized differential tests pass in CI.
 - Bend binary/source hash and protocol version appear in diagnostics.
-- Reference fallback and worker circuit breaker are exercised by fault tests.
+- Worker circuit breaker and typed unavailability responses are exercised by
+  fault tests.
 - Operational runbook covers graph rebuild, weather outage, worker crash, and
   rollback.
 - Documentation states data licenses and forecast/coastline provenance.
@@ -182,7 +186,7 @@ required maritime safety review has occurred.
 - Unit: formulas, rounding, headings, interpolation, objective policies.
 - Property: non-negative costs, monotonic distance cost, valid reconstructed
   edges, reported cost equals path sum.
-- Differential: Clojure versus Bend for randomized graphs and edge batches.
+- Differential: stable Bend versus candidate Bend, plus legacy golden fixtures.
 - Golden: exported old-system routes and metadata.
 - Contract: HTTP and Clojure/Bend protocol compatibility.
 - Geospatial: narrow channels, island coastlines, antimeridian, endpoint snap.
@@ -196,9 +200,9 @@ required maritime safety review has occurred.
 2. **Graph traversal may not suit a GPU.** Bend is valuable for language-level
    parallelism and proofs even when CPU execution wins. GPU is an optimization,
    not an architectural requirement.
-3. **Floating-point drift can fake parity failures.** Clojure computes reference
-   physics in doubles, then both engines compare scaled integer weights using one
-   documented rounding rule.
+3. **Floating-point drift can fake parity failures.** Bend defines the canonical
+   numeric representation and rounding rule. Legacy results are compared after
+   applying the documented tolerance or scaled-integer conversion.
 4. **Shortest paths may not be unique.** Compare optimal cost and path validity;
    require identical node sequences only after specifying tie-breaking.
 5. **Maritime safety is broader than coastline avoidance.** Draft, bathymetry,
@@ -210,4 +214,3 @@ required maritime safety review has occurred.
 The next implementation task is Phase 1: add a read-only fixture exporter to
 `hvm4-pathfinding`, then consume those fixtures here without changing the old
 repository's routing behavior.
-

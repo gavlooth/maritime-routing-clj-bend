@@ -1,28 +1,14 @@
 import Base
+import ./physics.bend as Physics
+import ./routing.bend as Routing
 
-# Migration kernel prototype. Costs are scaled unsigned integers; production
-# graph kernels will consume CSR arrays over the same representation.
-
-def min_u32.pick(a: U32, b: U32, take_a: Bool) -> U32:
-  match take_a:
-    case True{}:
-      a
-    case False{}:
-      b
-
-def min_u32(+a: U32, +b: U32) -> U32:
-  min_u32.pick(a, b, U32.is_le(a, b))
-
-def best_cost(xs: List<U32>) -> U32:
-  match xs:
-    case Nil{}:
-      4294967295
-    case Con{head, tail}:
-      min_u32(head, best_cost(tail))
-
-def best_pair(left: List<U32>, right: List<U32>) -> U32:
-  a b = best_cost(left) best_cost(right)
-  min_u32(a, b)
+def finish(metrics: Physics.Metrics) -> U32:
+  match metrics:
+    case Physics.Metrics{cost, hours, fuel, speed, bn}:
+      Routing.best_pair([Physics.scale_cost(cost, 1000.0), 15100], [8300, 11200, 10400])
 
 def main() -> U32:
-  best_pair([12000, 9700, 15100], [8300, 11200, 10400])
+  ship = {Physics.Ship{15.0, 200.0, 30000.0, 0.65, Physics.Normal{}, 50.0, 5.0} : Physics.Ship}
+  weather = {Physics.Weather{10.0, 20.0, 0.2, 90.0} : Physics.Weather}
+  edge = {Physics.Edge{8000.0, 70.0} : Physics.Edge}
+  finish(Physics.edge_cost(ship, weather, edge, Physics.TimeOnly{}))
