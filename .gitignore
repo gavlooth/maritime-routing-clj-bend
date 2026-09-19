@@ -1,0 +1,14 @@
+.cpcache/
+.clj-kondo/
+.lsp/
+target/
+build/
+dist/
+.idea/
+.vscode/
+*.class
+*.jar
+*.log
+.DS_Store
+data/cache/
+

@@ -1,0 +1,8 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.12.0"}}
+ :aliases
+ {:run {:main-opts ["-m" "maritime.main"]}
+  :test {:extra-paths ["test"]
+         :main-opts ["-m" "maritime.test-runner"]}
+  :dev {:jvm-opts ["-Dmaritime.log.level=DEBUG"]}}}
+

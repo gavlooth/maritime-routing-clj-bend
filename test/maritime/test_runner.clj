@@ -1,0 +1,15 @@
+(ns maritime.test-runner
+  (:gen-class)
+  (:require [clojure.test :as test]
+            maritime.domain-test
+            maritime.physics-test
+            maritime.routing-test))
+
+(defn -main [& _]
+  (let [{:keys [fail error]}
+        (test/run-tests 'maritime.domain-test
+                        'maritime.physics-test
+                        'maritime.routing-test)]
+    (when (pos? (+ fail error))
+      (System/exit 1))))
+
