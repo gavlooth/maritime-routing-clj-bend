@@ -106,6 +106,11 @@ Gate: fixtures are committed or reproducibly downloadable with checksums.
 - Port preset voyages and the Leaflet UI.
 - Implement graph/weather provider fakes and serve a complete synthetic route.
 
+Current status: the Reitit/http-kit/Jsonista API and UIx/Leaflet production
+bundle are implemented. Four curated Aegean corridors exercise route selection,
+objective selection, GeoJSON rendering, responsive layout, and the single-origin
+deployment model. The UI labels these routes as demonstration fixtures.
+
 Gate: browser selects endpoints, requests all objectives, and renders a route.
 
 #### Phase 3: real geospatial graph

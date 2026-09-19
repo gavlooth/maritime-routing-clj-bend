@@ -1,0 +1,13 @@
+{:deps true
+ :builds
+ {:app
+  {:target :browser
+   :output-dir "resources/public/js"
+   :asset-path "/js"
+   :modules {:main {:entries [maritime.frontend.app]
+                    :init-fn maritime.frontend.app/start}}
+   :devtools {:http-root "resources/public"
+              :http-port 3000
+              :proxy-url "http://127.0.0.1:8080"
+              :preloads [uix.preload]}
+   :compiler-options {:warnings-as-errors true}}}}

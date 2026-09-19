@@ -20,18 +20,33 @@ oracle; physical formulas and graph algorithms are never duplicated in Clojure.
 - A versioned, language-neutral protocol keeps either side replaceable and
   makes differential testing straightforward.
 
-## Run the current vertical slice
+## Run the application
 
-Requirements: Clojure CLI and Bend 2.0.5 or newer.
+Requirements: Clojure CLI, Node.js/npm, and Bend 2.0.5 or newer.
 
 ```bash
-clojure -M:test
+npm install
+npm run build
 clojure -M:run
-bend bend/main.bend
 ```
 
-The Clojure demo reports the prepared topology and Bend engine boundary. The
-Bend demo evaluates Kwon-derived edge cost and parallel candidate reduction.
+Open <http://127.0.0.1:8080>. The production build is served by the same
+http-kit process as the Reitit API.
+
+For live frontend development, run the backend and shadow-cljs separately:
+
+```bash
+clojure -M:run
+npm run dev
+```
+
+Then open <http://127.0.0.1:3000>; shadow-cljs proxies API requests to port
+8080. Run the complete suite with `make check`.
+
+The current map offers four curated Aegean demo corridors and four optimization
+modes through a real REST/GeoJSON contract. The corridor geometry is explicitly
+labeled as demonstration data until Bend CSR Dijkstra and the H3 coastline
+pipeline replace the fixtures.
 
 ## Target capabilities
 
@@ -41,7 +56,7 @@ Bend demo evaluates Kwon-derived edge cost and parallel candidate reduction.
 - Dynamic re-routing as forecast windows change
 - Bend Dijkstra and parallel delta-stepping
 - REST/JSON and GeoJSON responses
-- Leaflet route visualization
+- UIx/React and Leaflet route visualization
 - Reproducible benchmarks and differential parity tests
 - CPU first, with Bend GPU execution evaluated for suitable batch kernels
 
@@ -54,9 +69,10 @@ in [MIGRATION.md](docs/MIGRATION.md). Architectural boundaries are documented in
 ```text
 bend/                  Bend 2 physics, algorithms, and future laws/proofs
 docs/                  architecture, migration, and decision records
-resources/             configuration and future static frontend assets
-src/maritime/          Clojure orchestration and Bend process boundary
-test/maritime/         boundary and contract tests
+resources/public/      compiled UI, page shell, styles, and Leaflet CSS
+src/maritime/          Reitit/http-kit backend and Bend process boundary
+src/maritime/frontend/ ClojureScript UIx route console
+test/maritime/         boundary, API, and security-header tests
 ```
 
 ## Status

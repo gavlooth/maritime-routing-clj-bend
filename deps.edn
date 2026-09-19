@@ -1,8 +1,17 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.12.0"}}
+ :deps {org.clojure/clojure {:mvn/version "1.12.6"}
+        org.clojure/clojurescript {:mvn/version "1.12.145"}
+        metosin/reitit-ring {:mvn/version "0.11.0"}
+        http-kit/http-kit {:mvn/version "2.8.1"}
+        metosin/jsonista {:mvn/version "1.0.1"}
+        ring/ring-core {:mvn/version "1.15.4"}
+        com.pitch/uix.core {:mvn/version "1.4.9"}
+        com.pitch/uix.dom {:mvn/version "1.4.9"}
+        thheller/shadow-cljs {:mvn/version "3.5.3"}}
  :aliases
- {:run {:main-opts ["-m" "maritime.main"]}
+ {:run {:main-opts ["-m" "maritime.server"]}
+  :frontend {:main-opts ["-m" "shadow.cljs.devtools.cli"]}
   :test {:extra-paths ["test"]
+         :extra-deps {ring/ring-mock {:mvn/version "0.6.2"}}
          :main-opts ["-m" "maritime.test-runner"]}
   :dev {:jvm-opts ["-Dmaritime.log.level=DEBUG"]}}}
-

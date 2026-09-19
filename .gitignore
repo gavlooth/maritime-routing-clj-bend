@@ -4,6 +4,10 @@
 target/
 build/
 dist/
+node_modules/
+.shadow-cljs/
+.claude/
+.claude-flow/
 .idea/
 .vscode/
 *.class
@@ -11,4 +15,3 @@ dist/
 *.log
 .DS_Store
 data/cache/
-

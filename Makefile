@@ -1,10 +1,19 @@
-.PHONY: test run bend-check bend-build bend-test check
+.PHONY: install test run frontend-dev frontend-build bend-check bend-build bend-test check
+
+install:
+	npm install
 
 test:
 	clojure -M:test
 
 run:
 	clojure -M:run
+
+frontend-dev:
+	npm run dev
+
+frontend-build:
+	npm run build
 
 bend-check:
 	bend bend/physics.bend --checkup
@@ -18,4 +27,4 @@ bend-build:
 bend-test: bend-build
 	test "$$($(CURDIR)/build/maritime-bend --threads 2)" = "304"
 
-check: test bend-check bend-test
+check: test bend-check bend-test frontend-build

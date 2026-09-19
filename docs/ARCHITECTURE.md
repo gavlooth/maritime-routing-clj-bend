@@ -24,6 +24,11 @@ Bend worker
   - proof-backed invariants
 ```
 
+The browser is a ClojureScript application built with UIx and React. Leaflet
+renders GeoJSON `LineString` results returned by `/api/routes/:id`. Reitit owns
+the API routing, Jsonista owns JSON encoding, and http-kit serves the API and
+the production static bundle from one origin.
+
 The ownership rule is strict: if code expresses a physical formula, numerical
 model, optimization policy, graph traversal, search, reduction, or route
 algorithm, it belongs in Bend. Clojure may validate shapes and safety limits but
